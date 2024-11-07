@@ -1,3 +1,27 @@
 <resources>
-    <string name="app_name">Manly Wear</string>
+    <string name="app_name">Menly Wear</string>
+    <string name="continue_welcome">Let\'s continue</string>
+    <string name="login">Login</string>
+    <string name="order_taken">Order Taken</string>
+    <string name="order_is_being_prepared">Order is being prepared</string>
+    <string name="order_is_being_delivered">Order is being delivered</string>
+    <string name="order_received">Order received</string>
+    <string name="gototrackorder">Track Order</string>
+    <string name="continue_shopping">Continue Shopping</string>
+    <string name="Congratulations">Congratulations!!</string>
+    <string name="Congrats_description">Your Order has been taken and is being attended to.</string>
+    <string name="Add_to_basket">Add To Basket</string>
+    <string name="Description_text">Description</string>
+    <string name="basket_complete_order">Complete Order</string>
+    <string name="basket_pay_on_delivery">Pay on Delivery</string>
+    <string name="basket_pay_with_card">Pay with card</string>
+    <string name="basket_button_title">Checkout</string>
+    <string name="Basket_Title">My Basket</string>
+    <string name="Orders_Title">My Orders</string>
+    <string name="home_welcome_text">Which items would you like today?</string>
+    <string name="signup">SignUp</string>
+    <string name="sumbit">Submit</string>
+    <string name="welcome_title">Get the latest Men\'s Wear Items</string>
+    <string name="welcome_Description">We deliver the best clothing and accessory items for men.
+    order yours today.</string>
 </resources>
