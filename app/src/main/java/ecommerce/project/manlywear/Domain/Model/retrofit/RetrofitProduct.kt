@@ -1,4 +1,4 @@
-package ecommerce.project.manlywear.Domain.Model
+package ecommerce.project.manlywear.Domain.Model.retrofit
 
 import androidx.room.PrimaryKey
 

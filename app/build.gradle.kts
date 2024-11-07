@@ -1,6 +1,11 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.jetbrains.kotlin.serialization)
+    id ("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
+    id("kotlin-parcelize")
+
 }
 
 android {
@@ -59,6 +64,40 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+
+    //Room
+    //dependencies
+    implementation (libs.androidx.room.runtime) // Use the latest version available
+    implementation (libs.androidx.room.ktx)
+    kapt (libs.androidx.room.compiler)
+
+    //dagger hilt
+    implementation(libs.hilt.android)
+    kapt(libs.dagger.hilt.android.compiler)
+    // Hilt testing (optional, for testing with Hilt)
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.dagger.hilt.android.compiler)
+    // Hilt Navigation Compose
+    implementation (libs.androidx.hilt.navigation.compose)
+
+    //Glide
+    implementation (libs.compose)
+
+    //Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+
+    //material extended icons
+    implementation(libs.androidx.material.icons.extended.android)
+
+    //core navigation library
+    implementation(libs.androidx.navigation.compose)
+    androidTestImplementation(libs.androidx.navigation.testing)
+
+    //type-safe nav
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -66,4 +105,9 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+}
+
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }

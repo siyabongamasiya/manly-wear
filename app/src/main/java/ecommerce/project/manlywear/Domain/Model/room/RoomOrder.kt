@@ -1,16 +1,15 @@
-package ecommerce.project.manlywear.Domain.Model
+package ecommerce.project.manlywear.Domain.Model.room
 
 import androidx.room.ColumnInfo
 import androidx.room.PrimaryKey
-import java.util.Date
 
-data class Order(
+data class RoomOrder(
     @PrimaryKey(autoGenerate = false)
-    val id : Int,
+    val orderId : Int,
     @ColumnInfo(name = "userId")
     var userId : String,
     @ColumnInfo(name = "Status")
-    var status : String,
+    var status : Int,
     @ColumnInfo(name = "Total Cost")
     var totalCost : Int,
     @ColumnInfo(name = "Delivery Address")

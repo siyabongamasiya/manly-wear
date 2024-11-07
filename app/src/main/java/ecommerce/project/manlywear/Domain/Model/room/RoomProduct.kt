@@ -1,4 +1,4 @@
-package ecommerce.project.manlywear.Domain.Model
+package ecommerce.project.manlywear.Domain.Model.room
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "Basket")
 data class RoomProduct(
     @PrimaryKey(autoGenerate = false)
-    val id : Int,
+    val productId : Int,
     @ColumnInfo(name = "title")
     var title : String,
     @ColumnInfo(name = "price")
