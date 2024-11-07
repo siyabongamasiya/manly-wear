@@ -24,6 +24,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import ecommerce.project.manlywear.R
 import ecommerce.project.manlywear.ui.theme.ManlyWearTheme
+//
 
 @Composable
 fun splashscreen(ongotowelcomescreen : () -> Unit) {
