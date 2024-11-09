@@ -5,6 +5,7 @@ plugins {
     id ("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     id("kotlin-parcelize")
+    alias(libs.plugins.google.gms.google.services)
 
 }
 
@@ -69,6 +70,7 @@ dependencies {
     //dependencies
     implementation (libs.androidx.room.runtime) // Use the latest version available
     implementation (libs.androidx.room.ktx)
+    implementation(libs.firebase.auth)
     kapt (libs.androidx.room.compiler)
 
     //dagger hilt

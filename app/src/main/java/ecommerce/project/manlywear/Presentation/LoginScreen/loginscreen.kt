@@ -35,7 +35,7 @@ import ecommerce.project.manlywear.ui.theme.ManlyWearTheme
 
 
 @Composable
-fun loginscreen(onlogin : () -> Unit,onsignup : () -> Unit){
+fun loginscreen(onlogin: (email : String,password : String) -> Unit,onsignup : () -> Unit){
     ManlyWearTheme {
         var isvisible by remember {
             mutableStateOf(false)
@@ -57,8 +57,8 @@ fun loginscreen(onlogin : () -> Unit,onsignup : () -> Unit){
 }
 
 @Composable
-private fun midSectionLogin(paddingValues: PaddingValues,onlogin: () -> Unit,onsignup: () -> Unit){
-    var username by remember {
+private fun midSectionLogin(paddingValues: PaddingValues,onlogin: (email : String,password : String) -> Unit,onsignup: () -> Unit){
+    var email by remember {
         mutableStateOf("")
     }
 
@@ -75,8 +75,8 @@ private fun midSectionLogin(paddingValues: PaddingValues,onlogin: () -> Unit,ons
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally){
             EditText(modifier = Modifier.fillMaxWidth(), ontype = {newtext ->
-                username = newtext
-            }, typedText = username, ispassword = false,hint = "Username")
+                email = newtext
+            }, typedText = email, ispassword = false,hint = "Email")
             EditText(modifier = Modifier.fillMaxWidth(), ontype = {newpassword ->
                 password = newpassword
             }, typedText = password, ispassword = true, hint = "Password")
@@ -86,7 +86,7 @@ private fun midSectionLogin(paddingValues: PaddingValues,onlogin: () -> Unit,ons
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally){
 
-            CustomButton(modifier = Modifier.fillMaxWidth(), onclick = { onlogin.invoke() }, text = stringResource(
+            CustomButton(modifier = Modifier.fillMaxWidth(), onclick = { onlogin.invoke(email,password) }, text = stringResource(
                 id = R.string.login
             ))
 

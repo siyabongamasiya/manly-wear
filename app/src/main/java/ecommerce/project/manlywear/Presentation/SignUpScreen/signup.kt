@@ -28,7 +28,7 @@ import ecommerce.project.manlywear.R
 import ecommerce.project.manlywear.ui.theme.ManlyWearTheme
 
 @Composable
-fun signupscreen(onclickback : () -> Unit,onsubmit : () -> Unit){
+fun signupscreen(onclickback : () -> Unit,onsubmit: (email : String,password : String) -> Unit){
     ManlyWearTheme {
         var isvisible by remember {
             mutableStateOf(false)
@@ -52,8 +52,8 @@ fun signupscreen(onclickback : () -> Unit,onsubmit : () -> Unit){
 }
 
 @Composable
-private fun midSectionSignUp(paddingValues: PaddingValues,onsubmit: () -> Unit){
-    var username by remember {
+private fun midSectionSignUp(paddingValues: PaddingValues,onsubmit: (email : String,password : String) -> Unit){
+    var email by remember {
         mutableStateOf("")
     }
 
@@ -71,8 +71,8 @@ private fun midSectionSignUp(paddingValues: PaddingValues,onsubmit: () -> Unit){
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally){
             EditText(modifier = Modifier.fillMaxWidth(), ontype = {newtext ->
-                username = newtext
-            }, typedText = username, ispassword = false, hint = "Username")
+                email = newtext
+            }, typedText = email, ispassword = false, hint = "Email")
             EditText(modifier = Modifier.fillMaxWidth(), ontype = {newpassword ->
                 password = newpassword
             }, typedText = password, ispassword = true, hint = "Password")
@@ -82,7 +82,7 @@ private fun midSectionSignUp(paddingValues: PaddingValues,onsubmit: () -> Unit){
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally){
 
-            CustomButton(modifier = Modifier.fillMaxWidth(), onclick = { onsubmit.invoke()}, text = stringResource(
+            CustomButton(modifier = Modifier.fillMaxWidth(), onclick = { onsubmit.invoke(email, password)}, text = stringResource(
                 id = R.string.sumbit
             )
             )
