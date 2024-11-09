@@ -61,9 +61,7 @@ import ecommerce.project.manlywear.Utils.EventDispatcher
 import ecommerce.project.manlywear.Utils.SharedPreferencesUtil
 import ecommerce.project.manlywear.Utils.isValidEmail
 import ecommerce.project.manlywear.ui.theme.ManlyWearTheme
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -74,7 +72,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
         setContent {
             ManlyWearTheme {
                 // Create a SnackbarHostState
