@@ -1,4 +1,5 @@
 Menly Wear.
+
 Menly Wear is a feature-rich Android e-commerce application designed for shopping men’s clothing and accessories. 
 It allows users to browse products, add items to their Basket, and place orders securely. 
 Once an order is placed, the app simulates order management processes using background services. 
