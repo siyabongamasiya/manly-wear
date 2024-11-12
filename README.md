@@ -74,4 +74,4 @@ Payment Gateway Integration: Integrate a real payment gateway for live transacti
 ## Screenshots
 
 ### Home Screen
-![Home Screen](./HomeScreen.png)
+![Home Screen](./HomeScreen.jpg)
