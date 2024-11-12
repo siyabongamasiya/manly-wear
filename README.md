@@ -75,3 +75,18 @@ Payment Gateway Integration: Integrate a real payment gateway for live transacti
 
 ### Home Screen
 ![Home Screen](./HomeScreen.jpg)
+
+### Basket Screen
+![Basket Screen](./BasketScreen.jpg)
+
+### Completing Order Screen
+![Completing Order Screen](./CompletingOrder.jpg)
+
+### Details Screen
+![Details Screen](./DetailsScreen.jpg)
+
+### Order Complete Screen
+![Order Complete Screen](./OrderComplete.jpg)
+
+### Orders Screen
+![Orders Screen](./OrdersScreen.jpg)
