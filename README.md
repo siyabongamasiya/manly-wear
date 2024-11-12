@@ -69,3 +69,9 @@ Future Enhancements.
 Push Notifications: Notify users when order status changes or for promotional offers.
 
 Payment Gateway Integration: Integrate a real payment gateway for live transactions.
+
+
+## Screenshots
+
+### Home Screen
+![Home Screen](HomeScreen.png)
