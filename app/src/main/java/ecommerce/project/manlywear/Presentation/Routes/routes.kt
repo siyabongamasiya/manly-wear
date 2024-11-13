@@ -1,6 +1,6 @@
 package ecommerce.project.manlywear.Presentation.Routes
 
-import ecommerce.project.manlywear.Domain.Model.room.RoomProduct
+import ecommerce.project.manlywear.Domain.Model.room.ShoppableProduct
 import kotlinx.serialization.Serializable
 
 sealed class Routes{
@@ -18,10 +18,10 @@ sealed class Routes{
     data class SignUp(val arg : String = "") : Routes()
 
     @Serializable
-    data class Home(val arg: String = "") : Routes()
+    data class Home(val username: String = "") : Routes()
 
     @Serializable
-    data class ItemDetailsScreen(val roomProduct: String = "") : Routes()
+    data class ItemDetailsScreen(val shoppableProductID: Int = 0) : Routes()
 
     @Serializable
     data class BasketScreen(val arg: String = "") : Routes()
@@ -30,8 +30,8 @@ sealed class Routes{
     data class OrdersScreen(val arg: String = "") : Routes()
 
     @Serializable
-    data class OrderCompleteScreen(val arg: String = "") : Routes()
+    data class OrderCompleteScreen(val orderId : Int) : Routes()
 
     @Serializable
-    data class TrackOrderScreen(val arg: String = "") : Routes()
+    data class TrackOrderScreen(val orderId : Int) : Routes()
 }

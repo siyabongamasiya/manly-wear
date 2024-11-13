@@ -1,4 +1,4 @@
-package ecommerce.project.manlywear.Domain.Model.Repository
+package ecommerce.project.manlywear.Domain.Repository
 
 import android.content.Context
 import com.google.firebase.auth.FirebaseUser

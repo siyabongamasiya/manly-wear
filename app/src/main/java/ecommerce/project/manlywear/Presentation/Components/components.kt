@@ -1,5 +1,6 @@
 package ecommerce.project.manlywear.Presentation.Components
 
+import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,11 +11,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -44,6 +49,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
@@ -62,14 +68,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import ecommerce.project.manlywear.Presentation.BasketScreen.BasketViewModel
 import ecommerce.project.manlywear.R
 import ecommerce.project.manlywear.ui.theme.BACKGROUND_OF_SUCCESS_CIRCLE
 import ecommerce.project.manlywear.ui.theme.SUCCESS_CIRCLE
 import kotlinx.coroutines.launch
+import java.net.URL
 
 @Composable
 fun EditText(modifier: Modifier,
@@ -268,9 +278,10 @@ fun ImageWithText(
 
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun Item(
-    imageResource: Int,
+fun ShoppableItem(
+    imageResource: String,
     itemName: String,
     itemPrice: String,
     onclick: () -> Unit
@@ -285,30 +296,30 @@ fun Item(
             },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Image(
-            painter = painterResource(id = imageResource),
+        GlideImage(
+            model = imageResource,
+            contentScale = ContentScale.Crop,
             contentDescription = null,
-            modifier = Modifier.padding(bottom = 8.dp)
+            modifier = Modifier
+                .size(80.dp)
+                .padding(bottom = 8.dp)
         )
 
-//        GlideImage(
-//            model = Int,
-//            contentDescription = null,
-//            modifier = Modifier.padding(bottom = 8.dp)
-//        )
 
         Text(
             text = itemName,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onSecondary
         )
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = itemPrice,
+            text = "R${itemPrice}",
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSecondary)
     }
@@ -317,7 +328,7 @@ fun Item(
 @Composable
 fun OrderItem(modifier: Modifier,
                orderID : String,
-               orderTotal : Int,
+               orderTotal : Double,
                ondeleteOrder : () -> Unit,
                onclick: () -> Unit){
 
@@ -353,6 +364,7 @@ fun OrderItem(modifier: Modifier,
 
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun BasketItem(modifier: Modifier,
                itemname : String,
@@ -362,74 +374,101 @@ fun BasketItem(modifier: Modifier,
                ondeletefrombasket : () -> Unit,
                onclick: () -> Unit){
 
-    Row (modifier = modifier
-        .fillMaxWidth()
-        .clip(RoundedCornerShape(16.dp))
-        .background(MaterialTheme.colorScheme.secondary)
-        .padding(16.dp)
-        .clickable {
-            onclick.invoke()
-        },
-        horizontalArrangement = Arrangement.SpaceAround,
-        verticalAlignment = Alignment.CenterVertically){
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(MaterialTheme.colorScheme.secondary)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { onclick.invoke() },
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Image section
+        GlideImage(
+            model = itempic,
+            contentScale = ContentScale.Crop,
+            contentDescription = "item pic",
+            modifier = Modifier
+                .size(40.dp)
+                .clip(CircleShape)
+        )
 
-        Image(
-            modifier = Modifier.size(24.dp),
-            painter = painterResource(id = R.drawable.orders),
-            contentDescription = "item pic")
-
-        Column(modifier = Modifier,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.CenterHorizontally) {
-
-            Text(text = itemname,
+        // Text section
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 8.dp),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = itemname,
                 color = MaterialTheme.colorScheme.onSecondary,
-                style = MaterialTheme.typography.titleLarge)
-            Text(text = "${numberOrdered} items ordered",
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = MaterialTheme.typography.titleLarge
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "${numberOrdered} items ordered",
                 color = MaterialTheme.colorScheme.onSecondary,
-                style = MaterialTheme.typography.bodyLarge)
+                style = MaterialTheme.typography.bodyLarge
+            )
         }
 
-        Text(text = "R${itemPrice}",
+        // Price Text
+        Text(
+            text = "R${itemPrice}",
             color = MaterialTheme.colorScheme.onSecondary,
-            style = MaterialTheme.typography.titleMedium)
-        Icon(modifier = Modifier
-            .size(24.dp)
-            .clickable {
-                ondeletefrombasket.invoke()
-            },
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(end = 8.dp)
+        )
+
+        // Delete Icon
+        Icon(
+            modifier = Modifier
+                .size(24.dp)
+                .clickable { ondeletefrombasket.invoke() },
             tint = MaterialTheme.colorScheme.onSecondary,
             imageVector = Icons.Default.Delete,
-            contentDescription = "delete product from basket")
+            contentDescription = "delete product from basket"
+        )
     }
-
 }
 
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModalBottomSheetWithCloseButton(sheetState: SheetState,ongotoordercomplete : () -> Unit,onclose : () -> Unit) {
-    var showCardDetails by remember {
-        mutableStateOf(false)
-    }
+fun ModalBottomSheetWithCloseButton(
+    sheetState: SheetState,
+    modifier: Modifier,
+    ongotoordercomplete: () -> Unit,
+    onclose: () -> Unit,
+    basketViewModel: BasketViewModel
+) {
+    var showCardDetails by remember { mutableStateOf(false) }
 
-    // Modal Bottom Sheet content
     if (sheetState.isVisible) {
         ModalBottomSheet(
             sheetState = sheetState,
-            onDismissRequest = {
-                onclose.invoke()
-            },
-            scrimColor = Color.Black.copy(alpha = 0.2f)
+            onDismissRequest = { onclose.invoke() },
+            scrimColor = Color.Black.copy(alpha = 0.2f),
+            modifier = modifier.navigationBarsPadding()
         ) {
-
-
-            // Bottom Sheet content
-            if (showCardDetails){
-                CardDetails(onclosecarddetails = {showCardDetails = false}, ongotoordercomplete = ongotoordercomplete,onclose = onclose)
-            }else {
-                DeliveryDetails(ongotoordercomplete = ongotoordercomplete,onclose = onclose){
+            if (showCardDetails) {
+                CardDetails(
+                    onclosecarddetails = { showCardDetails = false },
+                    ongotoordercomplete = ongotoordercomplete,
+                    onclose = onclose,
+                    basketViewModel = basketViewModel
+                )
+            } else {
+                DeliveryDetails(
+                    ongotoordercomplete = ongotoordercomplete,
+                    onclose = onclose,
+                    basketViewModel = basketViewModel
+                ) {
                     showCardDetails = true
                 }
             }
@@ -440,7 +479,8 @@ fun ModalBottomSheetWithCloseButton(sheetState: SheetState,ongotoordercomplete :
 @Composable
 private fun CardDetails(ongotoordercomplete: () -> Unit,
                         onclosecarddetails : () -> Unit,
-                        onclose: () -> Unit){
+                        onclose: () -> Unit,
+                        basketViewModel: BasketViewModel){
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -448,21 +488,12 @@ private fun CardDetails(ongotoordercomplete: () -> Unit,
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        var cardholder by remember {
-            mutableStateOf("")
-        }
+        val orderDetails by basketViewModel.orderDetails.collectAsState()
 
-        var cardnumber by remember {
-            mutableStateOf("")
-        }
-
-        var date by remember {
-            mutableStateOf("")
-        }
-
-        var ccv by remember {
-            mutableStateOf("")
-        }
+        var cardholder = orderDetails.cardName
+        var cardnumber = orderDetails.cardNumber
+        var date = orderDetails.date
+        var ccv = orderDetails.ccv
 
         // Close button with cross icon
         Row(modifier = Modifier.fillMaxWidth(),
@@ -490,62 +521,78 @@ private fun CardDetails(ongotoordercomplete: () -> Unit,
             Spacer(modifier = Modifier.size(30.dp))
         }
 
-        EditText(modifier = Modifier.fillMaxWidth(),
-            ontype = {newtext ->
-                cardholder = newtext
-            },
-            ispassword = false,
-            typedText = cardholder,
-            hint = "Card Holder Name")
+        Column (modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally) {
 
-        EditText(modifier = Modifier.fillMaxWidth(),
-            ontype = {newnumber ->
-                cardnumber = newnumber
-            },
-            ispassword = true,
-            typedText = "$cardnumber",
-            isnumber = true,
-            hint = "Card Number")
-
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically) {
-
-            EditText(modifier = Modifier.size(100.dp),
-                ontype = {},
+            EditText(
+                modifier = Modifier.fillMaxWidth(),
+                ontype = { newtext ->
+                    basketViewModel.updateCardDetails(newtext,null,null,null)
+                },
                 ispassword = false,
-                typedText = date,
-                readonly = true,
-                hint = "Date")
+                typedText = cardholder,
+                hint = "Card Holder Name"
+            )
 
-            EditText(modifier = Modifier.size(100.dp),
-                ontype = {newnumber ->
-                    ccv = newnumber
+            EditText(
+                modifier = Modifier.fillMaxWidth(),
+                ontype = { newnumber ->
+                    basketViewModel.updateCardDetails(null,newnumber,null,null)
                 },
                 ispassword = true,
-                typedText = "$ccv",
+                typedText = "$cardnumber",
                 isnumber = true,
-                hint = "CCV")
+                hint = "Card Number"
+            )
 
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                EditText(
+                    modifier = Modifier.size(100.dp),
+                    ontype = {},
+                    ispassword = false,
+                    typedText = date,
+                    readonly = true,
+                    hint = "Date"
+                )
+
+                EditText(
+                    modifier = Modifier.size(100.dp),
+                    ontype = { newnumber ->
+                        basketViewModel.updateCardDetails(null,null,null,newnumber)
+                    },
+                    ispassword = true,
+                    typedText = "$ccv",
+                    isnumber = true,
+                    hint = "CCV"
+                )
+
+            }
+
+            CustomButton(
+                modifier = Modifier.fillMaxWidth(),
+                onclick = { ongotoordercomplete.invoke() },
+                text = stringResource(id = R.string.basket_complete_order)
+            )
         }
-
-        CustomButton(modifier = Modifier.fillMaxWidth(),
-            onclick = { ongotoordercomplete.invoke()},
-            text = stringResource(id = R.string.basket_complete_order))
     }
 }
 
 @Composable
-private fun DeliveryDetails(ongotoordercomplete: () -> Unit,onclose: () -> Unit,onshowcarddetails : () -> Unit){
-    var deliveryAddres by remember {
-        mutableStateOf("")
-    }
+private fun DeliveryDetails(ongotoordercomplete: () -> Unit,onclose: () -> Unit,
+                            basketViewModel: BasketViewModel,
+                            onshowcarddetails : () -> Unit){
+    val orderDetails by basketViewModel.orderDetails.collectAsState()
 
-    var phonenumber by remember {
-        mutableStateOf("")
-    }
+    var deliveryAddres = orderDetails.deliveryAddress
+    var phonenumber = orderDetails.phoneNumber
 
     // Close button with cross icon
     Row(modifier = Modifier.fillMaxWidth(),
@@ -569,45 +616,53 @@ private fun DeliveryDetails(ongotoordercomplete: () -> Unit,onclose: () -> Unit,
         Spacer(modifier = Modifier.size(30.dp))
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 24.dp, vertical = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        EditText(modifier = Modifier.fillMaxWidth(),
-            ontype = {newtext ->
-                deliveryAddres = newtext
-            },
-            ispassword = false,
-            typedText = deliveryAddres,
-            hint = "Delivery Address")
+    Column (modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally){
 
-        EditText(modifier = Modifier.fillMaxWidth(),
-            ontype = {newnumber ->
-                phonenumber = newnumber
-            },
-            ispassword = false,
-            typedText = "$phonenumber",
-            isnumber = true,
-            hint = "Phone Number")
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp, vertical = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            EditText(modifier = Modifier.fillMaxWidth(),
+                ontype = {newtext ->
+                    basketViewModel.updateDeliveryDetails(newtext,null)
+                },
+                ispassword = false,
+                typedText = deliveryAddres,
+                hint = "Delivery Address")
 
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 24.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically) {
+            EditText(modifier = Modifier.fillMaxWidth(),
+                ontype = {newnumber ->
+                    basketViewModel.updateDeliveryDetails(null,newnumber)
+                },
+                ispassword = false,
+                typedText = "$phonenumber",
+                isnumber = true,
+                hint = "Phone Number")
 
-            CustomButton(modifier = Modifier.weight(1f), onclick = { ongotoordercomplete.invoke() }, text = stringResource(
-                id = R.string.basket_pay_on_delivery
-            ))
-            CustomButton(modifier = Modifier.weight(1f), onclick = { onshowcarddetails.invoke() }, text = stringResource(
-                id = R.string.basket_pay_with_card
-            ))
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 24.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically) {
 
+                CustomButton(modifier = Modifier.weight(1f), onclick = { ongotoordercomplete.invoke() }, text = stringResource(
+                    id = R.string.basket_pay_on_delivery
+                ))
+                CustomButton(modifier = Modifier.weight(1f), onclick = { onshowcarddetails.invoke() }, text = stringResource(
+                    id = R.string.basket_pay_with_card
+                ))
+
+            }
         }
+
     }
+
+
 }
 
 @Composable

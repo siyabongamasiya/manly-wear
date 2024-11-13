@@ -66,11 +66,18 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    // WorkManager with Hilt
+    implementation ("androidx.hilt:hilt-work:1.0.0")
+    implementation ("androidx.work:work-runtime-ktx:2.7.1")
+    kapt ("androidx.hilt:hilt-compiler:1.0.0")
+
     //Room
     //dependencies
-    implementation (libs.androidx.room.runtime) // Use the latest version available
+    implementation (libs.androidx.room.runtime)
     implementation (libs.androidx.room.ktx)
     implementation(libs.firebase.auth)
+    implementation(libs.androidx.hilt.common)
+    implementation(libs.androidx.hilt.work)
     kapt (libs.androidx.room.compiler)
 
     //dagger hilt
@@ -101,6 +108,10 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.junit)
+    testImplementation ("io.mockk:mockk:1.13.5")
+    testImplementation ("app.cash.turbine:turbine:0.12.0")
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation ("androidx.arch.core:core-testing:2.1.0")
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))

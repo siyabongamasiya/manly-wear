@@ -3,7 +3,7 @@ package ecommerce.project.manlywear.Presentation.SignUpScreen
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ecommerce.project.manlywear.Domain.Model.Repository.AuthRepository
+import ecommerce.project.manlywear.Domain.Repository.AuthRepository
 import javax.inject.Inject
 
 

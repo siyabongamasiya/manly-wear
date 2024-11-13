@@ -21,6 +21,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,22 +33,24 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import ecommerce.project.manlywear.Domain.Model.room.RoomProduct
+import ecommerce.project.manlywear.Domain.Model.room.BasketProduct
+import ecommerce.project.manlywear.Domain.Model.room.ShoppableProduct
+import ecommerce.project.manlywear.Domain.UseCases.LocallyFetchShoppableProducts
 import ecommerce.project.manlywear.Presentation.Components.EditText
 import ecommerce.project.manlywear.Presentation.Components.ImageWithText
-import ecommerce.project.manlywear.Presentation.Components.Item
+import ecommerce.project.manlywear.Presentation.Components.ShoppableItem
 import ecommerce.project.manlywear.R
 import ecommerce.project.manlywear.ui.theme.ManlyWearTheme
 
 
 @Composable
-fun homescreen(onviewItem : (roomproduct : RoomProduct) -> Unit,
+fun homescreen(onviewItem : (productID : Int) -> Unit,
                onGoToMyOrderes : () -> Unit,
                onGoToMyBasket : () -> Unit,
-               name : String){
+               name : String,
+               homeViewModel: HomeViewModel){
 
     ManlyWearTheme {
         var isvisible by remember {
@@ -67,7 +70,8 @@ fun homescreen(onviewItem : (roomproduct : RoomProduct) -> Unit,
                     name = name,
                     onviewItem,
                     onGoToMyBasket,
-                    onGoToMyOrderes)
+                    onGoToMyOrderes,
+                    homeViewModel)
             }
         }
 
@@ -77,32 +81,17 @@ fun homescreen(onviewItem : (roomproduct : RoomProduct) -> Unit,
 @Composable
 private fun midSectionHomeScreen(paddingValues: PaddingValues,
                                  name : String,
-                                 onviewItem: (roomproduct : RoomProduct) -> Unit,
+                                 onviewItem: (productID : Int) -> Unit,
                                  onGoToMyBasket: () -> Unit,
-                                 onGoToMyOrderes: () -> Unit) {
+                                 onGoToMyOrderes: () -> Unit,
+                                 homeViewModel: HomeViewModel) {
     var search by remember {
         mutableStateOf("")
     }
 
-    val list = listOf(RoomProduct(1,"Blazer",
-        "R500",
-        "men",
-        "Blazer for men","uu",5,33),
-        RoomProduct(1,"Blazer",
-            "R500",
-            "men",
-            "Blazer for men","uu",5,33),
-        RoomProduct(1,"Blazer",
-            "R500",
-            "men",
-            "Blazer for men","uu",5,33),
-        RoomProduct(1,"Blazer",
-            "R500",
-            "men",
-            "Blazer for men","uu",5,33))
-
-    val items = remember {
-        mutableStateOf(list)
+    val shoppablelist by homeViewModel.shoppableProducts.collectAsState()
+    val filteredlist = shoppablelist.filter {product ->
+        product.title.contains(search,true)
     }
 
     Column(
@@ -162,18 +151,18 @@ private fun midSectionHomeScreen(paddingValues: PaddingValues,
         Spacer(modifier = Modifier.height(16.dp))
 
         LazyVerticalGrid(
-            columns = GridCells.Fixed(2),
+            columns = GridCells.Adaptive(80.dp),
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             content = {
 
-                items(items.value){roomproduct ->
-                    Item(imageResource = R.drawable.orders,
-                        itemName = roomproduct.title,
-                        itemPrice = roomproduct.price){
+                items(filteredlist){shoppableproduct ->
+                    ShoppableItem(imageResource = shoppableproduct.image,
+                        itemName = shoppableproduct.title,
+                        itemPrice = shoppableproduct.price){
 
-                        onviewItem.invoke(roomproduct)
+                        onviewItem.invoke(shoppableproduct.productId)
 
                     }
                 }

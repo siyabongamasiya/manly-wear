@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 
 @Entity(tableName = "Users")
-data class RoomUser(
+data class User(
     @PrimaryKey(autoGenerate = false)
     var username : String,
     @ColumnInfo(name = "password")

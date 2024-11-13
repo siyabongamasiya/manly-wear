@@ -20,17 +20,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import ecommerce.project.manlywear.Presentation.Components.Congratulator
 import ecommerce.project.manlywear.Presentation.Components.CustomButton
-import ecommerce.project.manlywear.Presentation.WelcomeScreen.midSectionWelcomeScreen
 import ecommerce.project.manlywear.R
 import ecommerce.project.manlywear.ui.theme.ManlyWearTheme
 
 
 @Composable
-fun ordercompletescreen(ongotohome: () -> Unit,ongototrackorder: () -> Unit){
+fun ordercompletescreen(ongotohome: () -> Unit, ongototrackorder: () -> Unit, orderId: Int){
     var isVisible by remember { mutableStateOf(false) }
 
     // Trigger visibility change after the Composable enters the composition

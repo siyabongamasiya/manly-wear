@@ -4,8 +4,8 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "Basket")
-data class RoomProduct(
+@Entity(tableName = "OrderProducts")
+data class OrderProduct(
     @PrimaryKey(autoGenerate = false)
     val productId : Int,
     @ColumnInfo(name = "title")
@@ -19,7 +19,5 @@ data class RoomProduct(
     @ColumnInfo(name = "image")
     var image : String,
     @ColumnInfo(name = "number of ordered items")
-    var no_of_ordered_items : Int,
-    @ColumnInfo(name = "order id")
-    var orderId : Int
+    var no_of_ordered_items : Int
 )

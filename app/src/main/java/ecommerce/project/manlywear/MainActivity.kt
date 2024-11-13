@@ -1,10 +1,8 @@
 package ecommerce.project.manlywear
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -14,7 +12,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,10 +28,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.auth.FirebaseAuth
+import androidx.navigation.toRoute
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
-import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.AndroidEntryPoint
 import ecommerce.project.manlywear.Constants.INVALID
 import ecommerce.project.manlywear.Constants.INVALID_DETAILS_LOGIN
@@ -42,23 +38,30 @@ import ecommerce.project.manlywear.Constants.INVALID_DETAILS_SIGN_UP
 import ecommerce.project.manlywear.Constants.INVALID_EMAIL_FORMAT
 import ecommerce.project.manlywear.Constants.INVALID_USER
 import ecommerce.project.manlywear.Constants.NetworkStates
+import ecommerce.project.manlywear.Constants.SAVED
 import ecommerce.project.manlywear.Firebase.AuthRepositoryImpl
+import ecommerce.project.manlywear.Presentation.BasketScreen.BasketViewModel
 import ecommerce.project.manlywear.Presentation.BasketScreen.basketscreen
+import ecommerce.project.manlywear.Presentation.HomeScreen.HomeViewModel
 import ecommerce.project.manlywear.Presentation.HomeScreen.homescreen
+import ecommerce.project.manlywear.Presentation.ItemDetailsScreen.ItemDetailsViewModel
 import ecommerce.project.manlywear.Presentation.ItemDetailsScreen.itemdetailsscreen
 import ecommerce.project.manlywear.Presentation.LoginScreen.LoginViewModel
 import ecommerce.project.manlywear.Presentation.LoginScreen.loginscreen
 import ecommerce.project.manlywear.Presentation.OrderCompleteScreen.ordercompletescreen
+import ecommerce.project.manlywear.Presentation.OrdersScreen.OrdersViewModel
 import ecommerce.project.manlywear.Presentation.OrdersScreen.ordersscreen
 import ecommerce.project.manlywear.Presentation.Routes.Routes
 import ecommerce.project.manlywear.Presentation.SignUpScreen.SignUpViewModel
 import ecommerce.project.manlywear.Presentation.SignUpScreen.signupscreen
 import ecommerce.project.manlywear.Presentation.SplashScreen.SplashViewModel
 import ecommerce.project.manlywear.Presentation.SplashScreen.splashscreen
+import ecommerce.project.manlywear.Presentation.TrackOrderScreen.TrackOrderViewModel
 import ecommerce.project.manlywear.Presentation.TrackOrderScreen.trackorderscreen
 import ecommerce.project.manlywear.Presentation.WelcomeScreen.welcomescreen
 import ecommerce.project.manlywear.Utils.EventDispatcher
 import ecommerce.project.manlywear.Utils.SharedPreferencesUtil
+import ecommerce.project.manlywear.Utils.getUsernameFromEmail
 import ecommerce.project.manlywear.Utils.isValidEmail
 import ecommerce.project.manlywear.ui.theme.ManlyWearTheme
 import kotlinx.coroutines.launch
@@ -85,7 +88,6 @@ class MainActivity : ComponentActivity() {
                 LifecycleEventEffect(event = Lifecycle.Event.ON_CREATE) {
 
                     scope.launch {
-
                         EventDispatcher.networkStatus.collect{result ->
                             showloading = result == NetworkStates.INPROGRESS.name
                         }
@@ -129,8 +131,13 @@ class MainActivity : ComponentActivity() {
         val splashViewModel = hiltViewModel<SplashViewModel>()
         val loginViewModel = hiltViewModel<LoginViewModel>()
         val signUpViewModel = hiltViewModel<SignUpViewModel>()
-        val coroutine = rememberCoroutineScope()
+        val homeViewModel = hiltViewModel<HomeViewModel>()
+        val itemDetailsViewModel = hiltViewModel<ItemDetailsViewModel>()
+        val basketViewModel = hiltViewModel<BasketViewModel>()
+        val ordersViewModel = hiltViewModel<OrdersViewModel>()
+        val trackOrderViewModel = hiltViewModel<TrackOrderViewModel>()
 
+        val coroutine = rememberCoroutineScope()
         val context = LocalContext.current
 
         NavHost(navController = navHostController, startDestination = Routes.Splash) {
@@ -141,7 +148,7 @@ class MainActivity : ComponentActivity() {
 
                     //if logged in go to home,
                     if(auth.getCurrentUser() != null) {
-                        navHostController.navigate(Routes.Home()) {
+                        navHostController.navigate(Routes.Home(getUsernameFromEmail(auth!!.getCurrentUser()!!.email!!))) {
                             popUpTo(0)
                         }
                     }else{
@@ -151,7 +158,7 @@ class MainActivity : ComponentActivity() {
                             coroutine.launch {
                                 val result = splashViewModel.SignInUser(useremail, password)
                                 result.onSuccess {
-                                    navHostController.navigate(Routes.Home())
+                                    navHostController.navigate(Routes.Home(getUsernameFromEmail(auth!!.getCurrentUser()!!.email!!)))
                                 }
 
                                 result.onFailure { _ ->
@@ -185,7 +192,7 @@ class MainActivity : ComponentActivity() {
                             val result = loginViewModel.Login(trimmedEmail,password)
                             result.onSuccess {
                                 SharedPreferencesUtil.saveCredentials(context,trimmedEmail,password)
-                                navHostController.navigate(Routes.Home()) {
+                                navHostController.navigate(Routes.Home(getUsernameFromEmail(auth!!.getCurrentUser()!!.email!!))) {
                                     popUpTo(0)
                                 }
                                 EventDispatcher.sendNetworkStatus(NetworkStates.DONE.name)
@@ -226,7 +233,7 @@ class MainActivity : ComponentActivity() {
 
                                 result.onSuccess {
                                     SharedPreferencesUtil.saveCredentials(context, trimmedEmail, password)
-                                    navHostController.navigate(Routes.Home()) {
+                                    navHostController.navigate(Routes.Home(getUsernameFromEmail(auth!!.getCurrentUser()!!.email!!))) {
                                         popUpTo(0)
                                     }
                                     EventDispatcher.sendNetworkStatus(NetworkStates.DONE.name)
@@ -249,47 +256,75 @@ class MainActivity : ComponentActivity() {
             }
 
             composable<Routes.Home> {
-                homescreen(onviewItem = {roomproduct ->
-                    navHostController.navigate(Routes.ItemDetailsScreen("to be done"))
+                val username = it.toRoute<Routes.Home>().username
+
+                homescreen(onviewItem = {productID ->
+                    navHostController.navigate(Routes.ItemDetailsScreen(productID))
                 }, onGoToMyBasket = {
                     navHostController.navigate(Routes.BasketScreen())
                 }, onGoToMyOrderes = {
                     navHostController.navigate(Routes.OrdersScreen())
-                }, name = "masiya")
+                }, name = username,
+                    homeViewModel = homeViewModel)
             }
 
             composable<Routes.BasketScreen>{
                 basketscreen(onclickback = {navHostController.navigateUp()},
                     onviewitem = {navHostController.navigate(Routes.ItemDetailsScreen())},
-                    ongotoordercomplete = {navHostController.navigate(Routes.OrderCompleteScreen())},
-                    ondeletefrombasket = {})
+                    ongotoordercomplete = {
+                        val newid = basketViewModel.SaveOrder(context)
+                        navHostController.navigate(Routes.OrderCompleteScreen(newid)){
+                            popUpTo(Routes.Home())
+                        }},
+                    ondeletefrombasket = {basketproduct ->
+                        basketViewModel.deleteBasketProduct(basketproduct)
+                    },
+                    basketViewModel = basketViewModel)
             }
 
             composable<Routes.OrdersScreen>{
                 ordersscreen(onclickback = {
                     navHostController.navigateUp()
-                }, onvieworder = {
-                    navHostController.navigate(Routes.TrackOrderScreen())
-                }, ondeleteorder = {
-
+                }, ordersViewModel = ordersViewModel
+                    ,
+                    onvieworder = {orderId ->
+                    navHostController.navigate(Routes.TrackOrderScreen(orderId))
+                }, ondeleteorder = {orderId ->
+                    ordersViewModel.deleteOrder(orderId)
                 })
             }
 
             composable<Routes.ItemDetailsScreen>{
-                itemdetailsscreen(onaddtobasket = {}, ongoback = {navHostController.navigateUp()})
+                val productID = it.toRoute<Routes.ItemDetailsScreen>().shoppableProductID
+
+                itemdetailsscreen(onaddtobasket = {basketproduct ->
+                    itemDetailsViewModel.saveBasketProduct(basketproduct)
+                    navHostController.navigateUp()
+                    onshowsnackbar.invoke(SAVED)
+                },
+                    ongoback = {navHostController.navigateUp()},
+                    productID = productID,
+                    itemDetailsViewModel = itemDetailsViewModel
+                )
             }
 
             composable<Routes.OrderCompleteScreen>{
+                val orderId = it.toRoute<Routes.OrderCompleteScreen>().orderId
+
                 ordercompletescreen(ongotohome = {navHostController.navigate(Routes.Home()){
                     popUpTo(0)
                 } },
-                    ongototrackorder ={navHostController.navigate(Routes.TrackOrderScreen())} )
+                    ongototrackorder ={navHostController.navigate(Routes.TrackOrderScreen(orderId)){
+                        popUpTo(Routes.Home())
+                    } },
+                    orderId = orderId)
             }
 
             composable<Routes.TrackOrderScreen>{
-                trackorderscreen("order", ongotohome = {navHostController.navigate(Routes.Home()){
+                val orderId = it.toRoute<Routes.TrackOrderScreen>().orderId
+                trackorderscreen(orderId = orderId, ongotohome = {navHostController.navigate(Routes.Home()){
                     popUpTo(0)
-                } })
+                } }, trackOrderViewModel = trackOrderViewModel)
             }
         }
     }

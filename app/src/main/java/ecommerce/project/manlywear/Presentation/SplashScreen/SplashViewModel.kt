@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
-import ecommerce.project.manlywear.Domain.Model.Repository.AuthRepository
+import ecommerce.project.manlywear.Domain.Repository.AuthRepository
 import ecommerce.project.manlywear.Firebase.AuthRepositoryImpl
 import ecommerce.project.manlywear.Utils.InvalidEmailException
 import ecommerce.project.manlywear.Utils.isValidEmail

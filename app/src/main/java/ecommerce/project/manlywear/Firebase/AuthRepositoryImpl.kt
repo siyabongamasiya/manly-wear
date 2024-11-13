@@ -3,7 +3,7 @@ package ecommerce.project.manlywear.Firebase
 import android.content.Context
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import ecommerce.project.manlywear.Domain.Model.Repository.AuthRepository
+import ecommerce.project.manlywear.Domain.Repository.AuthRepository
 import ecommerce.project.manlywear.Utils.SharedPreferencesUtil
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

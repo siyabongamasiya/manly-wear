@@ -2,6 +2,7 @@
     <string name="app_name">Menly Wear</string>
     <string name="continue_welcome">Let\'s continue</string>
     <string name="login">Login</string>
+    <string name="Prouct_DataBase_Name">product_database</string>
     <string name="order_taken">Order Taken</string>
     <string name="order_is_being_prepared">Order is being prepared</string>
     <string name="order_is_being_delivered">Order is being delivered</string>

@@ -4,7 +4,7 @@ import androidx.room.Entity
 
 
 @Entity(primaryKeys = ["orderId","productId"])
-data class OrderProductsCross(
+data class OrderProductCross(
     val orderId : Int,
     val productId : Int,
 )
