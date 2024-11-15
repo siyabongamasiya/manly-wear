@@ -3,8 +3,10 @@ package ecommerce.project.manlywear.Presentation.HomeScreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import ecommerce.project.manlywear.Constants.NetworkStates
 import ecommerce.project.manlywear.Domain.Model.room.ShoppableProduct
 import ecommerce.project.manlywear.Domain.UseCases.UseCasePack
+import ecommerce.project.manlywear.Utils.EventDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -24,7 +26,9 @@ class HomeViewModel @Inject constructor(val useCasePack: UseCasePack) : ViewMode
 
 
     fun getShoppableProducts(){
+
         viewModelScope.launch(Dispatchers.IO) {
+            EventDispatcher.sendNetworkStatus(NetworkStates.INPROGRESS.name)
             val shoppableProducts = useCasePack.locallyFetchShoppableProducts.invoke()
             if (shoppableProducts.isEmpty()){
                 useCasePack.remoteFetchAndStoreShoppableProducts.invoke()
@@ -32,11 +36,13 @@ class HomeViewModel @Inject constructor(val useCasePack: UseCasePack) : ViewMode
 
                 withContext(Dispatchers.Main){
                     _shoppableProducts.value = notemptyshoppableproducts
+                    EventDispatcher.sendNetworkStatus(NetworkStates.DONE.name)
                 }
 
             }else{
                 withContext(Dispatchers.Main){
                     _shoppableProducts.value = shoppableProducts
+                    EventDispatcher.sendNetworkStatus(NetworkStates.DONE.name)
                 }
             }
         }

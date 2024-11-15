@@ -48,6 +48,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -72,8 +73,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.LifecycleOwner
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import ecommerce.project.manlywear.Presentation.BasketScreen.BasketViewModel
 import ecommerce.project.manlywear.R
 import ecommerce.project.manlywear.ui.theme.BACKGROUND_OF_SUCCESS_CIRCLE
@@ -862,6 +868,29 @@ fun LevelStatus(modifier: Modifier,status : Int){
                     imageRes = null)
 
             }
+        }
+    }
+}
+
+
+@Composable
+fun LifecycleAwareComposable(
+    lifecycleOwner: LifecycleOwner ,
+    ongotosplash : () -> Unit
+) {
+    // Observe lifecycle changes
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                if(FirebaseAuth.getInstance().currentUser == null){
+                    ongotosplash.invoke()
+                }
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
         }
     }
 }

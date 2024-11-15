@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -42,6 +43,7 @@ import ecommerce.project.manlywear.Constants.SAVED
 import ecommerce.project.manlywear.Firebase.AuthRepositoryImpl
 import ecommerce.project.manlywear.Presentation.BasketScreen.BasketViewModel
 import ecommerce.project.manlywear.Presentation.BasketScreen.basketscreen
+import ecommerce.project.manlywear.Presentation.Components.LifecycleAwareComposable
 import ecommerce.project.manlywear.Presentation.HomeScreen.HomeViewModel
 import ecommerce.project.manlywear.Presentation.HomeScreen.homescreen
 import ecommerce.project.manlywear.Presentation.ItemDetailsScreen.ItemDetailsViewModel
@@ -115,10 +117,6 @@ class MainActivity : ComponentActivity() {
                         }
 
                     }
-
-
-
-
                 }
 
             }
@@ -221,6 +219,7 @@ class MainActivity : ComponentActivity() {
             }
 
             composable<Routes.SignUp>{
+
                 signupscreen(onclickback = {navHostController.navigateUp()},
                     onsubmit = {email,password ->
                         coroutine.launch {
@@ -257,6 +256,10 @@ class MainActivity : ComponentActivity() {
 
             composable<Routes.Home> {
                 val username = it.toRoute<Routes.Home>().username
+                //go back to splash if logged out
+                LifecycleAwareComposable(lifecycleOwner = LocalLifecycleOwner.current) {
+                    navHostController.navigate(Routes.Splash)
+                }
 
                 homescreen(onviewItem = {productID ->
                     navHostController.navigate(Routes.ItemDetailsScreen(productID))
@@ -269,6 +272,11 @@ class MainActivity : ComponentActivity() {
             }
 
             composable<Routes.BasketScreen>{
+                //go back to splash if logged out
+                LifecycleAwareComposable(lifecycleOwner = LocalLifecycleOwner.current) {
+                    navHostController.navigate(Routes.Splash)
+                }
+
                 basketscreen(onclickback = {navHostController.navigateUp()},
                     onviewitem = {navHostController.navigate(Routes.ItemDetailsScreen())},
                     ongotoordercomplete = {
@@ -283,6 +291,11 @@ class MainActivity : ComponentActivity() {
             }
 
             composable<Routes.OrdersScreen>{
+                //go back to splash if logged out
+                LifecycleAwareComposable(lifecycleOwner = LocalLifecycleOwner.current) {
+                    navHostController.navigate(Routes.Splash)
+                }
+
                 ordersscreen(onclickback = {
                     navHostController.navigateUp()
                 }, ordersViewModel = ordersViewModel
@@ -296,6 +309,11 @@ class MainActivity : ComponentActivity() {
 
             composable<Routes.ItemDetailsScreen>{
                 val productID = it.toRoute<Routes.ItemDetailsScreen>().shoppableProductID
+
+                //go back to splash if logged out
+                LifecycleAwareComposable(lifecycleOwner = LocalLifecycleOwner.current) {
+                    navHostController.navigate(Routes.Splash)
+                }
 
                 itemdetailsscreen(onaddtobasket = {basketproduct ->
                     itemDetailsViewModel.saveBasketProduct(basketproduct)
@@ -311,6 +329,11 @@ class MainActivity : ComponentActivity() {
             composable<Routes.OrderCompleteScreen>{
                 val orderId = it.toRoute<Routes.OrderCompleteScreen>().orderId
 
+                //go back to splash if logged out
+                LifecycleAwareComposable(lifecycleOwner = LocalLifecycleOwner.current) {
+                    navHostController.navigate(Routes.Splash)
+                }
+
                 ordercompletescreen(ongotohome = {navHostController.navigate(Routes.Home()){
                     popUpTo(0)
                 } },
@@ -322,6 +345,11 @@ class MainActivity : ComponentActivity() {
 
             composable<Routes.TrackOrderScreen>{
                 val orderId = it.toRoute<Routes.TrackOrderScreen>().orderId
+                //go back to splash if logged out
+                LifecycleAwareComposable(lifecycleOwner = LocalLifecycleOwner.current) {
+                    navHostController.navigate(Routes.Splash)
+                }
+
                 trackorderscreen(orderId = orderId, ongotohome = {navHostController.navigate(Routes.Home()){
                     popUpTo(0)
                 } }, trackOrderViewModel = trackOrderViewModel)
